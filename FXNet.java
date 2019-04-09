@@ -31,7 +31,7 @@ public class FXNet extends Application{
 		{
 			TextField textPort = new TextField("Enter Port ####");
 			Button btnStart = new Button("Start Server");
-			Button btnExit = new Button("Exit");
+			Button btnExit = new Button("Exit Game");
 			
 			HBox root = new HBox(20, textPort, btnStart, btnExit);
 			root.setPrefSize(600, 600);
@@ -72,10 +72,10 @@ public class FXNet extends Application{
 			TextField textIP = new TextField("127.0.0.1");
 			TextField textPort = new TextField("Enter Port ####");
 			Button btnStart = new Button("Connect to Server");
-			Button btnExit = new Button("Exit");
+			Button btnExit = new Button("Exit Game");
 
 			HBox root = new HBox(20, textIP, textPort, btnStart, btnExit);
-			root.setPrefSize(600, 100);
+			root.setPrefSize(650, 100);
 			
 			btnStart.setOnAction(event -> {
 				if(!Game.isInteger(textPort.getText()))
@@ -114,7 +114,7 @@ public class FXNet extends Application{
 			TextField textPortNum = new TextField();
 			textPortNum.setText("5555");
 			Button btnAnnounce = new Button("Announce Winner");
-			Button btnExit = new Button("Exit");
+			Button btnExit = new Button("Exit Game");
 
 			btnAnnounce.setOnAction(event -> {
 				try {
@@ -146,6 +146,7 @@ public class FXNet extends Application{
 			Button btnScissors = new Button("Scissors");
 			Button btnLizard = new Button("Lizard");
 			Button btnSpock = new Button("Spock");
+			Button btnExit = new Button("Exit Game");
 			
 			btnRock.setOnAction(event -> {
 				messages.appendText(sendCommand(GameCommands.PLAY_ROCK) + "\n");});
@@ -161,8 +162,19 @@ public class FXNet extends Application{
 
 			btnSpock.setOnAction(event -> {
 				messages.appendText(sendCommand(GameCommands.PLAY_SPOCK) + "\n");});
+			
+			btnExit.setOnAction(event -> {
+				try
+				{
+					conn.closeConn();
+				}
+				catch(Exception e){}
+				
+				System.exit(0);
+				
+			});
 		
-			VBox root = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock);
+			VBox root = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnExit);
 			root.setPrefSize(600, 600);
 			
 			if(conn.getNumClients() < 2)
@@ -200,7 +212,7 @@ public class FXNet extends Application{
 				System.exit(-1);
 			}
 		 } catch(Exception e){
-			 System.out.println("Fatal Error");
+			 System.out.println("Fatal Error... are you trying to launch without arguments?");
 			 System.exit(-1);
 		 }
 		
