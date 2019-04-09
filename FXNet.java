@@ -25,6 +25,8 @@ public class FXNet extends Application {
 	private String ip = "127.0.0.1"; /* Default IP */
 
 	/* Server GUI */
+	
+	/* Main Menu */
 	private Parent initServerMenuUI(Stage primaryStage) {
 		TextField textPort = new TextField("Enter Port ####");
 		Button btnStart = new Button("Start Server");
@@ -60,37 +62,8 @@ public class FXNet extends Application {
 
 		return root;
 	}
-
-	/* Client GUI */
-	private Parent initClientMenuUI(Stage primaryStage) {
-		TextField textIP = new TextField("127.0.0.1");
-		TextField textPort = new TextField("Enter Port ####");
-		Button btnStart = new Button("Connect to Server");
-		Button btnExit = new Button("Exit Game");
-
-		HBox root = new HBox(20, textIP, textPort, btnStart, btnExit);
-		root.setPrefSize(650, 100);
-
-		btnStart.setOnAction(event -> {
-			if (!Game.isInteger(textPort.getText()))
-				textPort.setText("Integers Only eg: 5555");
-			else if (textIP.getText().equals(""))
-				textIP.setText("127.0.0.1");
-			else {
-				ip = textIP.getText();
-				port = Integer.parseInt(textPort.getText());
-
-				conn = createClient();
-				try {
-					conn.startConn();
-					primaryStage.setScene(new Scene(initClientGameUI(primaryStage)));
-				} catch (Exception e) {}
-			}
-		});
-
-		return root;
-	}
-
+	
+	/* Run Games */
 	private Parent initServerGameUI(Stage primaryStage) {
 		messages.setPrefHeight(550);
 
@@ -125,6 +98,39 @@ public class FXNet extends Application {
 
 	}
 
+	/* Client GUI */
+	
+	/* Main Menu */
+	private Parent initClientMenuUI(Stage primaryStage) {
+		TextField textIP = new TextField("127.0.0.1");
+		TextField textPort = new TextField("Enter Port ####");
+		Button btnStart = new Button("Connect to Server");
+		Button btnExit = new Button("Exit Game");
+
+		HBox root = new HBox(20, textIP, textPort, btnStart, btnExit);
+		root.setPrefSize(650, 100);
+
+		btnStart.setOnAction(event -> {
+			if (!Game.isInteger(textPort.getText()))
+				textPort.setText("Integers Only eg: 5555");
+			else if (textIP.getText().equals(""))
+				textIP.setText("127.0.0.1");
+			else {
+				ip = textIP.getText();
+				port = Integer.parseInt(textPort.getText());
+
+				conn = createClient();
+				try {
+					conn.startConn();
+					primaryStage.setScene(new Scene(initClientGameUI(primaryStage)));
+				} catch (Exception e) {}
+			}
+		});
+
+		return root;
+	}
+
+	/* Run Game */
 	private Parent initClientGameUI(Stage primaryStage) {
 		messages.setPrefHeight(550);
 
@@ -178,6 +184,7 @@ public class FXNet extends Application {
 		return root;
 	}
 
+	/* Send Commands between Server/Client */
 	String sendCommand(GameCommands command) {
 
 		try {
@@ -189,6 +196,7 @@ public class FXNet extends Application {
 		return command.toString();
 	}
 
+	/* Must be called to define whether instance will be Server */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
