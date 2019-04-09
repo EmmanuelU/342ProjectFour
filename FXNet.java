@@ -17,7 +17,7 @@ import egs.Game.GameCommands;
 
 public class FXNet extends Application{
 
-	private boolean isServer = false;
+	private static boolean isServer;
 	
 	private NetworkConnection conn;
 	private TextArea messages = new TextArea();
@@ -189,6 +189,21 @@ public class FXNet extends Application{
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		 try{
+			if(args[0].equals("-s"))
+				isServer = true;
+			else if(args[0].equals("-c"))
+				isServer = false;
+			else
+			{
+				System.out.println("Usage: -s for Server, -c for Client");
+				System.exit(-1);
+			}
+		 } catch(Exception e){
+			 System.out.println("Fatal Error");
+			 System.exit(-1);
+		 }
+		
 		launch(args);
 	}
 
