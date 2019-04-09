@@ -25,7 +25,7 @@ public class FXNet extends Application {
 	private String ip = "127.0.0.1"; /* Default IP */
 
 	/* Server GUI */
-	private Parent initServerUI(Stage primaryStage) {
+	private Parent initServerMenuUI(Stage primaryStage) {
 		TextField textPort = new TextField("Enter Port ####");
 		Button btnStart = new Button("Start Server");
 		Button btnExit = new Button("Exit Game");
@@ -43,7 +43,7 @@ public class FXNet extends Application {
 			try {
 				conn.startConn();
 
-				primaryStage.setScene(new Scene(createGame(primaryStage)));
+				primaryStage.setScene(new Scene(initServerGameUI(primaryStage)));
 			} catch (Exception e) {
 			}
 
@@ -52,8 +52,7 @@ public class FXNet extends Application {
 		btnExit.setOnAction(event -> {
 			try {
 				conn.closeConn();
-			} catch (Exception e) {
-			}
+			} catch (Exception e) {}
 
 			System.exit(0);
 
@@ -63,7 +62,7 @@ public class FXNet extends Application {
 	}
 
 	/* Client GUI */
-	private Parent initClientUI(Stage primaryStage) {
+	private Parent initClientMenuUI(Stage primaryStage) {
 		TextField textIP = new TextField("127.0.0.1");
 		TextField textPort = new TextField("Enter Port ####");
 		Button btnStart = new Button("Connect to Server");
@@ -84,95 +83,99 @@ public class FXNet extends Application {
 				conn = createClient();
 				try {
 					conn.startConn();
-					primaryStage.setScene(new Scene(createGame(primaryStage)));
-				} catch (Exception e) {
-				}
+					primaryStage.setScene(new Scene(initClientGameUI(primaryStage)));
+				} catch (Exception e) {}
 			}
 		});
 
 		return root;
 	}
 
-	private Parent createGame(Stage primaryStage) {
+	private Parent initServerGameUI(Stage primaryStage) {
 		messages.setPrefHeight(550);
 
 		primaryStage.setTitle(ip + " " + (isServer ? "Server GUI " : "Client GUI ") + port);
 
-		if (isServer) {
-			TextField textPortNum = new TextField();
-			textPortNum.setText("5555");
-			Button btnAnnounce = new Button("Announce Winner");
-			Button btnExit = new Button("Exit Game");
+		TextField textPortNum = new TextField();
+		textPortNum.setText("5555");
+		Button btnAnnounce = new Button("Announce Winner");
+		Button btnExit = new Button("Exit Game");
 
-			btnAnnounce.setOnAction(event -> {
-				try {
-					conn.send("");
-				} catch (Exception e) {
-				}
-			});
+		btnAnnounce.setOnAction(event -> {
+			try {
+				conn.send("");
+			} catch (Exception e) {
+			}
+		});
 
-			btnExit.setOnAction(event -> {
-				try {
-					conn.closeConn();
-				} catch (Exception e) {
-				}
+		btnExit.setOnAction(event -> {
+			try {
+				conn.closeConn();
+			} catch (Exception e) {
+			}
 
-				System.exit(0);
+			System.exit(0);
 
-			});
+		});
 
-			VBox root = new VBox(20, messages, btnAnnounce, btnExit);
-			root.setPrefSize(600, 600);
+		VBox root = new VBox(20, messages, btnAnnounce, btnExit);
+		root.setPrefSize(600, 600);
 
-			return root;
-		} else {
-			Button btnRock = new Button("Rock");
-			Button btnPaper = new Button("Paper");
-			Button btnScissors = new Button("Scissors");
-			Button btnLizard = new Button("Lizard");
-			Button btnSpock = new Button("Spock");
-			Button btnExit = new Button("Exit Game");
+		return root;
 
-			btnRock.setOnAction(event -> {
-				messages.appendText(sendCommand(GameCommands.PLAY_ROCK) + "\n");
-			});
+	}
 
-			btnPaper.setOnAction(event -> {
-				messages.appendText(sendCommand(GameCommands.PLAY_PAPER) + "\n");
-			});
+	private Parent initClientGameUI(Stage primaryStage) {
+		messages.setPrefHeight(550);
 
-			btnScissors.setOnAction(event -> {
-				messages.appendText(sendCommand(GameCommands.PLAY_SCISSORS) + "\n");
-			});
+		primaryStage.setTitle(ip + " " + (isServer ? "Server GUI " : "Client GUI ") + port);
 
-			btnLizard.setOnAction(event -> {
-				messages.appendText(sendCommand(GameCommands.PLAY_LIZARD) + "\n");
-			});
+		Button btnRock = new Button("Rock");
+		Button btnPaper = new Button("Paper");
+		Button btnScissors = new Button("Scissors");
+		Button btnLizard = new Button("Lizard");
+		Button btnSpock = new Button("Spock");
+		Button btnExit = new Button("Exit Game");
 
-			btnSpock.setOnAction(event -> {
-				messages.appendText(sendCommand(GameCommands.PLAY_SPOCK) + "\n");
-			});
+		btnRock.setOnAction(event -> {
+			messages.appendText(sendCommand(GameCommands.PLAY_ROCK) + "\n");
+		});
 
-			btnExit.setOnAction(event -> {
-				try {
-					conn.closeConn();
-				} catch (Exception e) {
-				}
+		btnPaper.setOnAction(event -> {
+			messages.appendText(sendCommand(GameCommands.PLAY_PAPER) + "\n");
+		});
 
-				System.exit(0);
+		btnScissors.setOnAction(event -> {
+			messages.appendText(sendCommand(GameCommands.PLAY_SCISSORS) + "\n");
+		});
 
-			});
+		btnLizard.setOnAction(event -> {
+			messages.appendText(sendCommand(GameCommands.PLAY_LIZARD) + "\n");
+		});
 
-			VBox root = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnExit);
-			root.setPrefSize(600, 600);
+		btnSpock.setOnAction(event -> {
+			messages.appendText(sendCommand(GameCommands.PLAY_SPOCK) + "\n");
+		});
 
-			if (conn.getNumClients() < 2)
-				messages.appendText("Waiting for next player...");
-			else if (conn.getNumClients() == 2)
-				messages.appendText("Ready to Play");
+		btnExit.setOnAction(event -> {
+			try {
+				conn.closeConn();
+			} catch (Exception e) {
+			}
 
-			return root;
-		}
+			System.exit(0);
+
+		});
+
+		VBox root = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnExit);
+		root.setPrefSize(600, 600);
+
+		if (conn.getNumClients() < 2)
+			messages.appendText("Waiting for next player...");
+		else if (conn.getNumClients() == 2)
+			messages.appendText("Ready to Play");
+
+		return root;
 	}
 
 	String sendCommand(GameCommands command) {
@@ -209,7 +212,8 @@ public class FXNet extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
 
-		primaryStage.setScene(isServer ? new Scene(initServerUI(primaryStage)) : new Scene(initClientUI(primaryStage)));
+		primaryStage.setScene(
+				isServer ? new Scene(initServerMenuUI(primaryStage)) : new Scene(initClientMenuUI(primaryStage)));
 		primaryStage.show();
 
 	}
