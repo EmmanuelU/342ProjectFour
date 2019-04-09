@@ -74,7 +74,7 @@ public abstract class NetworkConnection {
 				
 				clients.forEach((client) -> {
 					try {
-						client.thread.out.writeObject(dataString);
+						client.sendData(dataString);
 					} catch (IOException e) {}
 				});
 				
@@ -161,7 +161,7 @@ public abstract class NetworkConnection {
 						ClientInfo client = new ClientInfo(new ClientThread(server.accept(), getNumClients() + 1));
 						clients.add(client);
 						
-						client.thread.start();	
+						client.startThread();	
 							
 						callback.accept("New Client Connection: Player " + getNumClients() );
 					}

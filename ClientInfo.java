@@ -8,13 +8,18 @@ public class ClientInfo {
 	private int id;
 	private int points = 0;
 	private int opponentID;
-	public ClientThread thread;
+	private ClientThread thread;
 	private String response = null;
 	
 	ClientInfo(ClientThread thread)
 	{
 		this.thread = thread;
 		id = this.thread.getID();
+	}
+	
+	public void startThread()
+	{
+		thread.start();
 	}
 	
 	public void addPoint()
@@ -55,7 +60,7 @@ public class ClientInfo {
 		this.response = response;
 	}
 	
-	public void sendMessage(Object data) throws IOException
+	public void sendData(Object data) throws IOException
 	{
 		thread.out.writeObject(data);
 	}
