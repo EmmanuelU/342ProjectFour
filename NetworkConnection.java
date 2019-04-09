@@ -15,10 +15,8 @@ public abstract class NetworkConnection {
 	private Consumer<Serializable> callback;
 
 	ArrayList<ClientInfo> clients;
-	String clientOneResponse = null;
-	String clientTwoResponse = null;
-	int clientOnePoints = 0;
-	int clientTwoPoints = 0;
+	int playerOne = 1;
+	int playerTwo = 2;
 	
 	public NetworkConnection(Consumer<Serializable> callback) {
 		this.callback = callback;
@@ -52,36 +50,36 @@ public abstract class NetworkConnection {
 	public void send(Serializable data) throws Exception{
 		if(isServer())
 		{
-			if(clientOneResponse != null && clientTwoResponse != null)
+			ClientInfo clientOne = getClientByID(playerOne);
+			ClientInfo clientTwo = getClientByID(playerTwo);
+			
+			if(clientOne.hasResponded() && clientTwo.hasResponded())
 			{
 
 				//check responses
-				int winnerID = Game.scoreHand(clientOneResponse, clientTwoResponse);
+				int winnerID = Game.scoreHand(clientOne.getResponse(), clientTwo.getResponse());
 				if(winnerID == 1)
-					clientOnePoints++;
+					clientOne.addPoint();
 				else if(winnerID == 2)
-					clientTwoPoints++;
+					clientTwo.addPoint();
 				
-				final String dataString = "\nPlayer One (" + clientOnePoints + " points) played " + clientOneResponse + "\n" + 
-						"Player Two (" + clientTwoPoints + " points) played " + clientTwoResponse + "\n"
+				final String dataString = "\nPlayer One (" + clientOne.getPoints() + " points) played " + clientOne.getResponse() + "\n" + 
+						"Player Two (" + clientTwo.getPoints() + " points) played " + clientTwo.getResponse() + "\n"
 							+ (winnerID > 0 ? 
 								("Player " + winnerID + " has won the round.") : 
 								("This round is a tie.")) + "\n";
 
 				callback.accept(dataString);
 				
-				Game.print(clientOneResponse + " " + clientTwoResponse);
+				Game.print(clientOne.getResponse() + " " + clientTwo.getResponse());
 				
 				clients.forEach((client) -> {
 					try {
 						client.sendData(dataString);
+						client.clearResponse();
 					} catch (IOException e) {}
 				});
-				
-				
-				//reset responses
-				clientOneResponse = null;
-				clientTwoResponse = null;
+			
 			}
 			else
 				callback.accept("Player(s) still need to select hand");
@@ -127,14 +125,16 @@ public abstract class NetworkConnection {
 				while(true) {
 					Serializable data = (Serializable) in.readObject();
 					
-					if(id == 1) //for Game Commands
+					/*if(id == 1) //for Game Commands
 					{
-						clientOneResponse = data.toString();
+						clientOneResponse = 
 					}
 					else if (id == 2)
 					{
 						clientTwoResponse = data.toString();
-					}
+					}*/
+
+					getClientByID(id).setResponse(data.toString());
 					
 					callback.accept("Player " + id + ": " + data);
 				}

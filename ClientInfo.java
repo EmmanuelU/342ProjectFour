@@ -44,10 +44,7 @@ public class ClientInfo {
 	
 	public String getResponse()
 	{
-		if(response == null)
-			return "";
-		else
-			return response;
+		return response;
 	}
 	
 	public void clearResponse()
