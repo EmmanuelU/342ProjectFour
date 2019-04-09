@@ -13,8 +13,8 @@ public abstract class NetworkConnection {
 	
 	private ConnThread connthread;
 	private Consumer<Serializable> callback;
-	
-	ArrayList<ClientThread> threads;
+
+	ArrayList<ClientInfo> clients;
 	String clientOneResponse = null;
 	String clientTwoResponse = null;
 	int clientOnePoints = 0;
@@ -25,12 +25,23 @@ public abstract class NetworkConnection {
 		connthread = new ConnThread();
 		connthread.setDaemon(true);
 		
-		threads = new ArrayList<ClientThread>();
+		clients = new ArrayList<ClientInfo>();
 	}
 	
 	public int getNumClients()
 	{
-		return threads.size();
+		return clients.size();
+	}
+	
+	public ClientInfo getClientByID(int id)
+	{
+		for(ClientInfo client : clients)
+		{
+			if(client.getID() == id)
+				return client;
+		}
+		
+		return null;
 	}
 	
 	public void startConn() throws Exception{
@@ -61,9 +72,9 @@ public abstract class NetworkConnection {
 				
 				Game.print(clientOneResponse + " " + clientTwoResponse);
 				
-				threads.forEach((client) -> {
+				clients.forEach((client) -> {
 					try {
-						client.out.writeObject(dataString);
+						client.thread.out.writeObject(dataString);
 					} catch (IOException e) {}
 				});
 				
@@ -101,6 +112,10 @@ public abstract class NetworkConnection {
 			this.id = id;
 		}
 		
+		public int getID()
+		{
+			return id;
+		}
 		
 		public void run() {
 			try{
@@ -141,19 +156,20 @@ public abstract class NetworkConnection {
 			if(isServer())
 			{
 				try(ServerSocket server = new ServerSocket(getPort())) {
-					while(threads.size() < 2)
+					while(getNumClients() < 2)
 					{
-						ClientThread client = new ClientThread(server.accept(), threads.size() + 1);
-						threads.add(client);
-						client.start();	
+						ClientInfo client = new ClientInfo(new ClientThread(server.accept(), getNumClients() + 1));
+						clients.add(client);
+						
+						client.thread.start();	
 							
-						callback.accept("New Client Connection: Player " + threads.size());
+						callback.accept("New Client Connection: Player " + getNumClients() );
 					}
 					callback.accept("Maximum players.");
 				}
 				catch(Exception e)
 				{
-					
+					e.printStackTrace();
 				}
 			}
 			else
@@ -173,6 +189,7 @@ public abstract class NetworkConnection {
 					
 				}
 				catch(Exception e) {
+					e.printStackTrace();
 					callback.accept("connection Closed");
 				}
 			}
