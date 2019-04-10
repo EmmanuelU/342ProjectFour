@@ -19,8 +19,10 @@ public abstract class NetworkConnection {
 	private Consumer<Serializable> callback;
 
 	ArrayList<ClientInfo> clients;
-	int playerOne = 0;
-	int playerTwo = 0;
+	
+	private int playerOne = 0;
+	private int playerTwo = 0;
+	private int playerCount = 0;
 	
 	private final int MAX_PLAYERS = 8;
 	
@@ -30,6 +32,11 @@ public abstract class NetworkConnection {
 		connthread.setDaemon(true);
 		
 		clients = new ArrayList<ClientInfo>();
+	}
+	
+	public int getClientCounter()
+	{
+		return playerCount;
 	}
 	
 	public int getNumClients()
@@ -207,7 +214,7 @@ public abstract class NetworkConnection {
 								}
 								
 								if(!foundClient)
-									getClientByID(id).sendData("Player not found ID " + clientStringID);
+									getClientByID(id).sendData("Player " + clientStringID + " not found.");
 							}
 						}
 						
@@ -243,7 +250,16 @@ public abstract class NetworkConnection {
 				
 			}
 			catch(Exception e) {
-				callback.accept("Client Disconnected.");
+				for(ClientInfo client : clients)
+				{
+					if(client.getID() == id)
+					{
+						clients.remove(client);
+						callback.accept("Player " + id + " Disconnected.");
+						break;
+					}
+				}
+				
 			}
 		}
 	}
@@ -260,12 +276,12 @@ public abstract class NetworkConnection {
 				try(ServerSocket server = new ServerSocket(getPort())) {
 					while(getNumClients() < MAX_PLAYERS)
 					{
-						ClientInfo client = new ClientInfo(new ClientThread(server.accept(), getNumClients() + 1));
+						ClientInfo client = new ClientInfo(new ClientThread(server.accept(), ++playerCount));
 						clients.add(client);
 						
 						client.startThread();	
 							
-						callback.accept("Player " + getNumClients() + " has connected.");
+						callback.accept("Player " + client.getID() + " has connected.");
 					}
 					callback.accept("Maximum players, not accepting any more clients.");
 				}
