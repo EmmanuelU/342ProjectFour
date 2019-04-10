@@ -54,6 +54,7 @@ public class FXNet extends Application {
 
 				primaryStage.setScene(new Scene(initServerGameUI(primaryStage)));
 			} catch (Exception e) {
+				System.out.println("Error starting connection.");
 			}
 
 		});
@@ -85,6 +86,7 @@ public class FXNet extends Application {
 			try {
 				conn.send("");
 			} catch (Exception e) {
+				System.out.println("Error sending command data.");
 			}
 		});
 
@@ -130,7 +132,9 @@ public class FXNet extends Application {
 				try {
 					conn.startConn();
 					primaryStage.setScene(new Scene(initClientGameUI(primaryStage)));
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					System.out.println("Error sending command data.");
+				}
 			}
 		});
 
@@ -148,9 +152,6 @@ public class FXNet extends Application {
 		Button btnScissors = new Button("Scissors");
 		Button btnLizard = new Button("Lizard");
 		Button btnSpock = new Button("Spock");
-		Button btnWho = new Button("Who Am I?");
-		Button btnLob = new Button("Who can I Play?");
-		Button btnExit = new Button("Exit Game");
 
 		btnRock.setOnAction(event -> {
 			messages.appendText(sendCommand(GameCommands.PLAY_ROCK) + NEWLINE);
@@ -172,6 +173,25 @@ public class FXNet extends Application {
 			messages.appendText(sendCommand(GameCommands.PLAY_SPOCK) + NEWLINE);
 		});
 		
+
+		VBox vbox = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock);
+		vbox.setPrefSize(600, 600);
+
+		TextField textPlayerSelect = new TextField();
+		Button btnChallenge = new Button("Challenge Player");
+		Button btnWho = new Button("Who Am I?");
+		Button btnLob = new Button("Who can I Play?");
+		Button btnExit = new Button("Exit Game");
+		
+		btnChallenge.setOnAction(event -> {
+			if(Game.isInteger(textPlayerSelect.getText()))
+			{
+				messages.appendText(sendCommand(GameCommands.CLIENT_CHALLENGE, textPlayerSelect.getText()) + NEWLINE);
+			}
+			else
+				messages.appendText("Enter Player ID # and press Challenge" + NEWLINE);
+		});
+		
 		btnWho.setOnAction(event -> {
 			messages.appendText(sendCommand(GameCommands.CLIENT_WHOAMI) + NEWLINE);
 		});
@@ -191,23 +211,7 @@ public class FXNet extends Application {
 
 		});
 		
-
-		VBox vbox = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnWho, btnLob, btnExit);
-		vbox.setPrefSize(600, 600);
-
-		TextField textPlayerSelect = new TextField();
-		Button btnChallenge = new Button("Challenge Player");
-		
-		btnChallenge.setOnAction(event -> {
-			if(Game.isInteger(textPlayerSelect.getText()))
-			{
-				messages.appendText(sendCommand(GameCommands.CLIENT_CHALLENGE, textPlayerSelect.getText()) + NEWLINE);
-			}
-			else
-				messages.appendText("Enter Player ID # and press Challenge" + NEWLINE);
-		});
-		
-		HBox hbox = new HBox(20, textPlayerSelect, btnChallenge);
+		HBox hbox = new HBox(20, textPlayerSelect, btnChallenge, btnLob, btnWho, btnExit);
 		
 		BorderPane border = new BorderPane();
 		border.setTop(hbox);
@@ -225,7 +229,7 @@ public class FXNet extends Application {
 		try {
 			conn.send(command.toString() + param);
 		} catch (Exception e) {
-
+			System.out.println("Error sending command data.");
 		}
 		return command.toString() + param;
 	}
@@ -270,6 +274,7 @@ public class FXNet extends Application {
 		try {
 			conn.closeConn();
 		} catch (Exception e) {
+			
 		}
 	}
 

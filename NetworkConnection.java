@@ -1,5 +1,6 @@
 package egs;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -58,7 +59,7 @@ public abstract class NetworkConnection {
 		connthread.start();
 	}
 	
-	public void send(Serializable data) throws Exception{
+	public void send(Serializable data) throws Exception {
 		if(isServer())
 		{
 			ClientInfo clientOne = getClientByID(playerOne);
@@ -158,7 +159,7 @@ public abstract class NetworkConnection {
 							int c = client.getID();
 							
 							if(id != c)
-								lobby += "Player " + c + " | ";
+								lobby += "Player " + c + "  ";
 						}
 						getClientByID(id).sendData(lobby);
 					}
@@ -242,7 +243,7 @@ public abstract class NetworkConnection {
 				
 			}
 			catch(Exception e) {
-				callback.accept("connection Closed");
+				callback.accept("Client Disconnected.");
 			}
 		}
 	}
@@ -266,11 +267,11 @@ public abstract class NetworkConnection {
 							
 						callback.accept("Player " + getNumClients() + " has connected.");
 					}
-					callback.accept("Maximum players.");
+					callback.accept("Maximum players, not accepting any more clients.");
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+					callback.accept("Client Disconnected.");
 				}
 			}
 			else
@@ -290,8 +291,7 @@ public abstract class NetworkConnection {
 					
 				}
 				catch(Exception e) {
-					e.printStackTrace();
-					callback.accept("connection Closed");
+					callback.accept("Server Disconnected.");
 				}
 			}
 		}
