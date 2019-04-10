@@ -200,16 +200,10 @@ public class FXNet extends Application {
 		btnChallenge.setOnAction(event -> {
 			if(Game.isInteger(textPlayerSelect.getText()))
 			{
-				int client = Integer.parseInt(textPlayerSelect.getText());
-				if(conn.isClientID(client))
-				{
-					messages.appendText(sendCommand(GameCommands.CLIENT_CHALLENGE, textPlayerSelect.getText()) + NEWLINE);
-				}
-				else
-					messages.appendText("Player not found" + NEWLINE);
+				messages.appendText(sendCommand(GameCommands.CLIENT_CHALLENGE, textPlayerSelect.getText()) + NEWLINE);
 			}
 			else
-				messages.appendText("Enter Player ID # and press Challenge");
+				messages.appendText("Enter Player ID # and press Challenge" + NEWLINE);
 		});
 		
 		HBox hbox = new HBox(20, textPlayerSelect, btnChallenge);
@@ -219,9 +213,9 @@ public class FXNet extends Application {
 		border.setCenter(vbox);
 
 		if (conn.getNumClients() < 2)
-			messages.appendText("Waiting for next player..."); /*LOOKHERE*/
+			messages.appendText("Waiting for next player..." + NEWLINE); /*LOOKHERE*/
 		else if (conn.getNumClients() == 2)
-			messages.appendText("Ready to Play");
+			messages.appendText("Ready to Play" + NEWLINE);
 
 		return border;
 	}

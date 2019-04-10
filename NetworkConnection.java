@@ -36,11 +36,6 @@ public abstract class NetworkConnection {
 		return clients.size();
 	}
 	
-	public boolean isClientID(int id)
-	{
-		return getClientByID(id).getID() == id; //connected
-	}
-	
 	public int getClientID()
 	{
 		
@@ -158,6 +153,39 @@ public abstract class NetworkConnection {
 								lobby += "Player " + c + "\n";
 						}
 						getClientByID(id).sendData(lobby);
+					}
+					else if(Game.matchCommand(dataString, GameCommands.CLIENT_CHALLENGE))
+					{
+						int clientID;
+						//messages.appendText("Player not found" + NEWLINE);
+						String clientStringID = dataString.replace(GameCommands.CLIENT_CHALLENGE.toString(), "");
+						if(!Game.isInteger(clientStringID))
+						{
+							getClientByID(id).sendData("Invalid Challenge");
+						}
+						else
+						{
+							clientID = Integer.parseInt(clientStringID);
+							boolean foundClient = false;
+							if(clientID == id)
+								getClientByID(id).sendData("You cannot play yourself");
+							else
+							{
+								for(ClientInfo client : clients)
+								{
+									if(clientID == client.getID())
+									{
+										foundClient = true;
+										getClientByID(id).sendData("New challenge!");
+										getClientByID(clientID).sendData("New Challenge");
+									}
+								}
+								
+								if(!foundClient)
+									getClientByID(id).sendData("Player not found ID " + clientStringID);
+							}
+						}
+						
 					}
 					else //no commands detected
 					{
