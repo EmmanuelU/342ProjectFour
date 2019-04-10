@@ -22,6 +22,7 @@ public class FXNet extends Application {
 	private NetworkConnection conn;
 	private TextArea messages = new TextArea();
 	private int port = 0;
+	private int id;
 	private String ip = "127.0.0.1"; /* Default IP */
 
 	/* Server GUI */
@@ -177,7 +178,7 @@ public class FXNet extends Application {
 		root.setPrefSize(600, 600);
 
 		if (conn.getNumClients() < 2)
-			messages.appendText("Waiting for next player...");
+			messages.appendText("Waiting for next player..."); /*LOOKHERE*/
 		else if (conn.getNumClients() == 2)
 			messages.appendText("Ready to Play");
 

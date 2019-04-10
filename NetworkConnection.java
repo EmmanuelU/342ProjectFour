@@ -9,6 +9,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+import egs.Game;
+import egs.Game.GameCommands;
+
 public abstract class NetworkConnection {
 	
 	private ConnThread connthread;
@@ -29,6 +32,12 @@ public abstract class NetworkConnection {
 	public int getNumClients()
 	{
 		return clients.size();
+	}
+	
+	public int getClientID()
+	{
+		
+		return 0; //server
 	}
 	
 	public ClientInfo getClientByID(int id)
@@ -122,21 +131,21 @@ public abstract class NetworkConnection {
 			
 				socket.setTcpNoDelay(true);
 				
-				while(true) {
+				while(true) { //Incoming data from client
 					Serializable data = (Serializable) in.readObject();
 					
-					/*if(id == 1) //for Game Commands
-					{
-						clientOneResponse = 
-					}
-					else if (id == 2)
-					{
-						clientTwoResponse = data.toString();
-					}*/
-
-					getClientByID(id).setResponse(data.toString());
+					String dataString = data.toString().trim();
 					
-					callback.accept("Player " + id + ": " + data);
+					if(Game.matchCommand(dataString, GameCommands.CLIENT_NOTIFY))
+					{
+						callback.accept("You are Player " + id);
+						getClientByID(id).sendData("You are Player " + id);
+					}
+					else //no commands detected
+					{
+						getClientByID(id).setResponse(data.toString());
+						callback.accept("Player " + id + ": " + data);
+					}
 				}
 				
 			}
@@ -163,7 +172,9 @@ public abstract class NetworkConnection {
 						
 						client.startThread();	
 							
-						callback.accept("New Client Connection: Player " + getNumClients() );
+						callback.accept("New Client Connection: Player " + getNumClients());
+						
+						//client.sendData("You are Player " + getNumClients());
 					}
 					callback.accept("Maximum players.");
 				}

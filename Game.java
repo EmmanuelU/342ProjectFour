@@ -17,8 +17,8 @@ public class Game {
 	
 	public enum GameCommands
 	{
-		NEW_CLIENT,
-		DEL_CLIENT,
+		CLIENT_NOTIFY,
+		CLIENT_CHALLENGE,
 		
 		PLAY_ROCK,
 		PLAY_PAPER,
@@ -27,7 +27,6 @@ public class Game {
 		PLAY_SPOCK,
 		
 		MISC_MESSAGE,
-		ADD_POINT
 	};
 	
 	public static GameCommands stringToCommand(String command) {
@@ -39,6 +38,11 @@ public class Game {
 	    }
 
 	    return GameCommands.MISC_MESSAGE;
+	}
+	
+	public static boolean matchCommand(String input, GameCommands command)
+	{
+		return input.startsWith(command.toString());
 	}
 	
 	public static int scoreHand(String inputOne, String inputTwo) //return id of winner
