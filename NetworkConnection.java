@@ -70,12 +70,19 @@ public abstract class NetworkConnection {
 				//check responses
 				int winnerID = Game.scoreHand(clientOne.getResponse(), clientTwo.getResponse());
 				if(winnerID == 1)
+				{
 					clientOne.addPoint();
+					winnerID = clientOne.getID();
+				}
 				else if(winnerID == 2)
+				{
 					clientTwo.addPoint();
+					winnerID = clientTwo.getID();
+				}
 				
-				final String dataString = "\nPlayer One (" + clientOne.getPoints() + " points) played " + clientOne.getResponse() + "\n" + 
-						"Player Two (" + clientTwo.getPoints() + " points) played " + clientTwo.getResponse() + "\n"
+				
+				final String dataString = "\nPlayer " + clientOne.getID() + " (" + clientOne.getPoints() + " points) played " + clientOne.getResponse() + "\n" + 
+						"Player " + clientTwo.getID() + " (" + clientTwo.getPoints() + " points) played " + clientTwo.getResponse() + "\n"
 							+ (winnerID > 0 ? 
 								("Player " + winnerID + " has won the round.") : 
 								("This round is a tie.")) + "\n";
@@ -176,8 +183,21 @@ public abstract class NetworkConnection {
 									if(clientID == client.getID())
 									{
 										foundClient = true;
-										getClientByID(id).sendData("New challenge!");
-										getClientByID(clientID).sendData("New Challenge");
+										if(getClientByID(clientID).isBusy())
+										{
+											getClientByID(clientID).sendData("Player " + id + " wanted to challenge you. You are already in a match.");
+										}
+										else
+										{
+											getClientByID(id).startRound(clientID);
+											getClientByID(clientID).startRound(id);
+											
+											playerOne = clientID;
+											playerTwo = id;
+											
+											getClientByID(id).sendData("Challenged Player " + clientID + ", press any action to play.");
+											getClientByID(clientID).sendData("Player " + id + " has challenged you, press any action to play.");
+										}
 									}
 								}
 								
@@ -189,8 +209,15 @@ public abstract class NetworkConnection {
 					}
 					else //no commands detected
 					{
-						getClientByID(id).setResponse(data.toString());
-						callback.accept("Player " + id + ": " + data);
+						if(getClientByID(id).isBusy())
+						{
+							getClientByID(id).setResponse(data.toString());
+							callback.accept("Player " + id + ": " + data);
+						}
+						else
+						{
+							getClientByID(id).sendData("You must challenge a player first.");
+						}
 					}
 				}
 				

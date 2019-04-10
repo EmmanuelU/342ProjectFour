@@ -7,7 +7,7 @@ import egs.NetworkConnection.ClientThread;
 public class ClientInfo {
 	private int id;
 	private int points = 0;
-	private int opponentID;
+	private int opponentID = 0;
 	private ClientThread thread;
 	private String response = null;
 	
@@ -20,6 +20,16 @@ public class ClientInfo {
 	public void startThread()
 	{
 		thread.start();
+	}
+	
+	public boolean isBusy()
+	{
+		return opponentID > 0;
+	}
+	
+	public void startRound(int opponentID)
+	{
+		this.opponentID = opponentID;
 	}
 	
 	public void addPoint()
