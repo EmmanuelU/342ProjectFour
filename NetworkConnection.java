@@ -218,11 +218,20 @@ public abstract class NetworkConnection {
 							getClientByID(id).setResponse(data.toString());
 							
 							if(playerOne != id)
-								getClientByID(playerOne).setResponse(data.toString());
+							{
+								getClientByID(playerOne).sendData("Your opponent has chosen an action.");
+							}
 							else if(playerTwo != id)
-								getClientByID(playerTwo).setResponse(data.toString());
+							{
+								getClientByID(playerTwo).sendData("Your opponent has chosen an action.");
+							}
 							
 							callback.accept("Player " + id + ": " + data);
+							
+							if(getClientByID(playerOne).hasResponded() && getClientByID(playerTwo).hasResponded())
+							{
+								callback.accept("Ready to announce winner");
+							}
 						}
 						else
 						{
