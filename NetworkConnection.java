@@ -176,7 +176,7 @@ public abstract class NetworkConnection {
 			if(isServer())
 			{
 				try(ServerSocket server = new ServerSocket(getPort())) {
-					while(getNumClients() < 2)
+					while(getNumClients() < 8)
 					{
 						ClientInfo client = new ClientInfo(new ClientThread(server.accept(), getNumClients() + 1));
 						clients.add(client);
