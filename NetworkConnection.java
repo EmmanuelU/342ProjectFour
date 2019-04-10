@@ -136,10 +136,21 @@ public abstract class NetworkConnection {
 					
 					String dataString = data.toString().trim();
 					
-					if(Game.matchCommand(dataString, GameCommands.CLIENT_NOTIFY))
+					if(Game.matchCommand(dataString, GameCommands.CLIENT_WHOAMI))
 					{
-						callback.accept("You are Player " + id);
 						getClientByID(id).sendData("You are Player " + id);
+					}
+					else if(Game.matchCommand(dataString, GameCommands.CLIENT_LOBBY))
+					{
+						String lobby = "Current Lobby: \n";
+						for(ClientInfo client : clients)
+						{
+							int c = client.getID();
+							
+							if(id != c)
+								lobby += "Player " + c + "\n";
+						}
+						getClientByID(id).sendData(lobby);
 					}
 					else //no commands detected
 					{

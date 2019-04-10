@@ -142,6 +142,8 @@ public class FXNet extends Application {
 		Button btnScissors = new Button("Scissors");
 		Button btnLizard = new Button("Lizard");
 		Button btnSpock = new Button("Spock");
+		Button btnWho = new Button("Who Am I?");
+		Button btnLob = new Button("Who can I Play?");
 		Button btnExit = new Button("Exit Game");
 
 		btnRock.setOnAction(event -> {
@@ -163,6 +165,15 @@ public class FXNet extends Application {
 		btnSpock.setOnAction(event -> {
 			messages.appendText(sendCommand(GameCommands.PLAY_SPOCK) + "\n");
 		});
+		
+		btnWho.setOnAction(event -> {
+			messages.appendText(sendCommand(GameCommands.CLIENT_WHOAMI) + "\n");
+		});
+		
+		btnLob.setOnAction(event -> {
+			messages.appendText(sendCommand(GameCommands.CLIENT_LOBBY) + "\n");
+		});
+
 
 		btnExit.setOnAction(event -> {
 			try {
@@ -174,7 +185,7 @@ public class FXNet extends Application {
 
 		});
 
-		VBox root = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnExit);
+		VBox root = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnWho, btnLob, btnExit);
 		root.setPrefSize(600, 600);
 
 		if (conn.getNumClients() < 2)
