@@ -32,6 +32,11 @@ public class ClientInfo {
 		this.opponentID = opponentID;
 	}
 	
+	public void resetRound()
+	{
+		this.opponentID = 0;
+	}
+	
 	public void addPoint()
 	{
 		points++;

@@ -18,8 +18,8 @@ public abstract class NetworkConnection {
 	private Consumer<Serializable> callback;
 
 	ArrayList<ClientInfo> clients;
-	int playerOne = 1;
-	int playerTwo = 2;
+	int playerOne = 0;
+	int playerTwo = 0;
 	
 	private final int MAX_PLAYERS = 8;
 	
@@ -64,7 +64,7 @@ public abstract class NetworkConnection {
 			ClientInfo clientOne = getClientByID(playerOne);
 			ClientInfo clientTwo = getClientByID(playerTwo);
 			
-			if(clientOne.hasResponded() && clientTwo.hasResponded())
+			if(playerOne > 0 && playerTwo > 0 && clientOne.hasResponded() && clientTwo.hasResponded())
 			{
 
 				//check responses
@@ -80,7 +80,6 @@ public abstract class NetworkConnection {
 					winnerID = clientTwo.getID();
 				}
 				
-				
 				final String dataString = "\nPlayer " + clientOne.getID() + " (" + clientOne.getPoints() + " points) played " + clientOne.getResponse() + "\n" + 
 						"Player " + clientTwo.getID() + " (" + clientTwo.getPoints() + " points) played " + clientTwo.getResponse() + "\n"
 							+ (winnerID > 0 ? 
@@ -89,14 +88,16 @@ public abstract class NetworkConnection {
 
 				callback.accept(dataString);
 				
-				Game.print(clientOne.getResponse() + " " + clientTwo.getResponse());
-				
 				clients.forEach((client) -> {
 					try {
 						client.sendData(dataString);
+						client.resetRound(); //clear opponents
 						client.clearResponse();
 					} catch (IOException e) {}
 				});
+				
+				playerOne = 0;
+				playerTwo = 0;
 			
 			}
 			else
@@ -186,6 +187,7 @@ public abstract class NetworkConnection {
 										if(getClientByID(clientID).isBusy())
 										{
 											getClientByID(clientID).sendData("Player " + id + " wanted to challenge you. You are already in a match.");
+											getClientByID(id).sendData("Player " + clientID + " is already in a match.");
 										}
 										else
 										{
@@ -245,9 +247,7 @@ public abstract class NetworkConnection {
 						
 						client.startThread();	
 							
-						callback.accept("New Client Connection: Player " + getNumClients());
-						
-						//client.sendData("You are Player " + getNumClients());
+						callback.accept("Player " + getNumClients() + " has connected.");
 					}
 					callback.accept("Maximum players.");
 				}

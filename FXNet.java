@@ -27,6 +27,7 @@ public class FXNet extends Application {
 	private String ip = "127.0.0.1"; /* Default IP */
 	
 	private final String NEWLINE = "\n";
+	private final String DBLNEWLINE = "\n\n";
 
 	/* Server GUI */
 	
@@ -212,11 +213,6 @@ public class FXNet extends Application {
 		border.setTop(hbox);
 		border.setCenter(vbox);
 
-		if (conn.getNumClients() < 2)
-			messages.appendText("Waiting for next player..." + NEWLINE); /*LOOKHERE*/
-		else if (conn.getNumClients() == 2)
-			messages.appendText("Ready to Play" + NEWLINE);
-
 		return border;
 	}
 
@@ -280,7 +276,7 @@ public class FXNet extends Application {
 	private Server createServer() {
 		return new Server(port, data -> {
 			Platform.runLater(() -> {
-				messages.appendText(data.toString() + NEWLINE);
+				messages.appendText(data.toString() + DBLNEWLINE);
 			});
 		});
 	}
@@ -288,7 +284,7 @@ public class FXNet extends Application {
 	private Client createClient() {
 		return new Client(ip, port, data -> {
 			Platform.runLater(() -> {
-				messages.appendText(data.toString() + NEWLINE);
+				messages.appendText(data.toString() + DBLNEWLINE);
 			});
 		});
 	}
