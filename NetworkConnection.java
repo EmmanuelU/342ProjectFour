@@ -152,13 +152,13 @@ public abstract class NetworkConnection {
 					}
 					else if(Game.matchCommand(dataString, GameCommands.CLIENT_LOBBY))
 					{
-						String lobby = "Current Lobby: \n";
+						String lobby = "Lobby: ";
 						for(ClientInfo client : clients)
 						{
 							int c = client.getID();
 							
 							if(id != c)
-								lobby += "Player " + c + "\n";
+								lobby += "Player " + c + " | ";
 						}
 						getClientByID(id).sendData(lobby);
 					}
@@ -169,14 +169,16 @@ public abstract class NetworkConnection {
 						String clientStringID = dataString.replace(GameCommands.CLIENT_CHALLENGE.toString(), "");
 						if(!Game.isInteger(clientStringID))
 						{
-							getClientByID(id).sendData("Invalid Challenge");
+							getClientByID(id).sendData("Invalid Challenge.");
 						}
 						else
 						{
 							clientID = Integer.parseInt(clientStringID);
 							boolean foundClient = false;
 							if(clientID == id)
-								getClientByID(id).sendData("You cannot play yourself");
+								getClientByID(id).sendData("You cannot play yourself.");
+							else if((playerOne + playerTwo) > 0)
+								getClientByID(id).sendData("Match currently in progress.");
 							else
 							{
 								for(ClientInfo client : clients)
@@ -214,6 +216,12 @@ public abstract class NetworkConnection {
 						if(getClientByID(id).isBusy())
 						{
 							getClientByID(id).setResponse(data.toString());
+							
+							if(playerOne != id)
+								getClientByID(playerOne).setResponse(data.toString());
+							else if(playerTwo != id)
+								getClientByID(playerTwo).setResponse(data.toString());
+							
 							callback.accept("Player " + id + ": " + data);
 						}
 						else
