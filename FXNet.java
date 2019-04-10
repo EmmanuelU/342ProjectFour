@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -24,11 +25,15 @@ public class FXNet extends Application {
 	private int port = 0;
 	private int id;
 	private String ip = "127.0.0.1"; /* Default IP */
+	
+	private final String NEWLINE = "\n";
 
 	/* Server GUI */
 	
 	/* Main Menu */
 	private Parent initServerMenuUI(Stage primaryStage) {
+		primaryStage.setTitle(isServer ? "Server Menu" : "Client Menu");
+		
 		TextField textPort = new TextField("Enter Port ####");
 		Button btnStart = new Button("Start Server");
 		Button btnExit = new Button("Exit Game");
@@ -68,7 +73,7 @@ public class FXNet extends Application {
 	private Parent initServerGameUI(Stage primaryStage) {
 		messages.setPrefHeight(550);
 
-		primaryStage.setTitle(ip + " " + (isServer ? "Server GUI " : "Client GUI ") + port);
+		primaryStage.setTitle(ip + " " + (isServer ? "Game Server " : "Client Player") + port);
 
 		TextField textPortNum = new TextField();
 		textPortNum.setText("5555");
@@ -147,31 +152,31 @@ public class FXNet extends Application {
 		Button btnExit = new Button("Exit Game");
 
 		btnRock.setOnAction(event -> {
-			messages.appendText(sendCommand(GameCommands.PLAY_ROCK) + "\n");
+			messages.appendText(sendCommand(GameCommands.PLAY_ROCK) + NEWLINE);
 		});
 
 		btnPaper.setOnAction(event -> {
-			messages.appendText(sendCommand(GameCommands.PLAY_PAPER) + "\n");
+			messages.appendText(sendCommand(GameCommands.PLAY_PAPER) + NEWLINE);
 		});
 
 		btnScissors.setOnAction(event -> {
-			messages.appendText(sendCommand(GameCommands.PLAY_SCISSORS) + "\n");
+			messages.appendText(sendCommand(GameCommands.PLAY_SCISSORS) + NEWLINE);
 		});
 
 		btnLizard.setOnAction(event -> {
-			messages.appendText(sendCommand(GameCommands.PLAY_LIZARD) + "\n");
+			messages.appendText(sendCommand(GameCommands.PLAY_LIZARD) + NEWLINE);
 		});
 
 		btnSpock.setOnAction(event -> {
-			messages.appendText(sendCommand(GameCommands.PLAY_SPOCK) + "\n");
+			messages.appendText(sendCommand(GameCommands.PLAY_SPOCK) + NEWLINE);
 		});
 		
 		btnWho.setOnAction(event -> {
-			messages.appendText(sendCommand(GameCommands.CLIENT_WHOAMI) + "\n");
+			messages.appendText(sendCommand(GameCommands.CLIENT_WHOAMI) + NEWLINE);
 		});
 		
 		btnLob.setOnAction(event -> {
-			messages.appendText(sendCommand(GameCommands.CLIENT_LOBBY) + "\n");
+			messages.appendText(sendCommand(GameCommands.CLIENT_LOBBY) + NEWLINE);
 		});
 
 
@@ -184,28 +189,55 @@ public class FXNet extends Application {
 			System.exit(0);
 
 		});
+		
 
-		VBox root = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnWho, btnLob, btnExit);
-		root.setPrefSize(600, 600);
+		VBox vbox = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock, btnWho, btnLob, btnExit);
+		vbox.setPrefSize(600, 600);
+
+		TextField textPlayerSelect = new TextField();
+		Button btnChallenge = new Button("Challenge Player");
+		
+		btnChallenge.setOnAction(event -> {
+			if(Game.isInteger(textPlayerSelect.getText()))
+			{
+				int client = Integer.parseInt(textPlayerSelect.getText());
+				if(conn.isClientID(client))
+				{
+					messages.appendText(sendCommand(GameCommands.CLIENT_CHALLENGE, textPlayerSelect.getText()) + NEWLINE);
+				}
+				else
+					messages.appendText("Player not found" + NEWLINE);
+			}
+			else
+				messages.appendText("Enter Player ID # and press Challenge");
+		});
+		
+		HBox hbox = new HBox(20, textPlayerSelect, btnChallenge);
+		
+		BorderPane border = new BorderPane();
+		border.setTop(hbox);
+		border.setCenter(vbox);
 
 		if (conn.getNumClients() < 2)
 			messages.appendText("Waiting for next player..."); /*LOOKHERE*/
 		else if (conn.getNumClients() == 2)
 			messages.appendText("Ready to Play");
 
-		return root;
+		return border;
 	}
 
 	/* Send Commands between Server/Client */
 	String sendCommand(GameCommands command) {
-
+		return sendCommand(command, "");
+	}
+	
+	String sendCommand(GameCommands command, String param) {
 		try {
-			conn.send(command.toString());
+			conn.send(command.toString() + param);
 		} catch (Exception e) {
 
 		}
-
-		return command.toString();
+		return command.toString() + param;
 	}
 
 	/* Must be called to define whether instance will be Server */
@@ -254,7 +286,7 @@ public class FXNet extends Application {
 	private Server createServer() {
 		return new Server(port, data -> {
 			Platform.runLater(() -> {
-				messages.appendText(data.toString() + "\n");
+				messages.appendText(data.toString() + NEWLINE);
 			});
 		});
 	}
@@ -262,7 +294,7 @@ public class FXNet extends Application {
 	private Client createClient() {
 		return new Client(ip, port, data -> {
 			Platform.runLater(() -> {
-				messages.appendText(data.toString() + "\n");
+				messages.appendText(data.toString() + NEWLINE);
 			});
 		});
 	}

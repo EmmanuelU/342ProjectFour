@@ -21,6 +21,8 @@ public abstract class NetworkConnection {
 	int playerOne = 1;
 	int playerTwo = 2;
 	
+	private final int MAX_PLAYERS = 8;
+	
 	public NetworkConnection(Consumer<Serializable> callback) {
 		this.callback = callback;
 		connthread = new ConnThread();
@@ -32,6 +34,11 @@ public abstract class NetworkConnection {
 	public int getNumClients()
 	{
 		return clients.size();
+	}
+	
+	public boolean isClientID(int id)
+	{
+		return getClientByID(id).getID() == id; //connected
 	}
 	
 	public int getClientID()
@@ -176,7 +183,7 @@ public abstract class NetworkConnection {
 			if(isServer())
 			{
 				try(ServerSocket server = new ServerSocket(getPort())) {
-					while(getNumClients() < 8)
+					while(getNumClients() < MAX_PLAYERS)
 					{
 						ClientInfo client = new ClientInfo(new ClientThread(server.accept(), getNumClients() + 1));
 						clients.add(client);
