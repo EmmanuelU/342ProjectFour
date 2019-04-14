@@ -143,7 +143,7 @@ public class FXNet extends Application {
 
 	/* Run Game */
 	private Parent initClientGameUI(Stage primaryStage) {
-		messages.setPrefHeight(550);
+		//messages.setPrefHeight(550);
 
 		primaryStage.setTitle(ip + " " + (isServer ? "Server GUI " : "Client GUI ") + port);
 
@@ -174,8 +174,11 @@ public class FXNet extends Application {
 		});
 		
 
-		VBox vbox = new VBox(20, messages, btnRock, btnPaper, btnScissors, btnLizard, btnSpock);
-		vbox.setPrefSize(600, 600);
+		HBox hbox = new HBox(20, btnRock, btnPaper, btnScissors, btnLizard, btnSpock);
+		//hbox.setPrefSize(600, 600);
+		
+
+		VBox vbox = new VBox(20, messages);
 
 		TextField textPlayerSelect = new TextField();
 		Button btnChallenge = new Button("Challenge Player");
@@ -211,11 +214,12 @@ public class FXNet extends Application {
 
 		});
 		
-		HBox hbox = new HBox(20, textPlayerSelect, btnChallenge, btnLob, btnWho, btnExit);
+		HBox hboxTwo = new HBox(20, textPlayerSelect, btnChallenge, btnLob, btnWho, btnExit);
 		
 		BorderPane border = new BorderPane();
-		border.setTop(hbox);
+		border.setTop(hboxTwo);
 		border.setCenter(vbox);
+		border.setBottom(hbox);
 
 		return border;
 	}

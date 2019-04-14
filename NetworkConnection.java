@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import egs.Game;
 import egs.Game.GameCommands;
+import javafx.application.Platform;
 
 public abstract class NetworkConnection {
 	
@@ -282,6 +283,20 @@ public abstract class NetworkConnection {
 						client.startThread();	
 							
 						callback.accept("Player " + client.getID() + " has connected.");
+						
+						/*Platform.runLater(() {
+							
+							for(ClientInfo client : clients)
+							{
+								if(client.getID() == id)
+								{
+									clients.remove(client);
+									callback.accept("Player " + id + " Disconnected.");
+									break;
+								}
+							}
+							
+						});*/
 					}
 					callback.accept("Maximum players, not accepting any more clients.");
 				}
