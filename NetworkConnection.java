@@ -284,19 +284,11 @@ public abstract class NetworkConnection {
 							
 						callback.accept("Player " + client.getID() + " has connected.");
 						
-						/*Platform.runLater(() {
-							
-							for(ClientInfo client : clients)
-							{
-								if(client.getID() == id)
-								{
-									clients.remove(client);
-									callback.accept("Player " + id + " Disconnected.");
-									break;
-								}
-							}
-							
-						});*/
+						for(ClientInfo c : clients)
+						{
+							if(c.getID() != playerCount)
+								c.sendData("Player " + client.getID() + " has connected.");
+						}
 					}
 					callback.accept("Maximum players, not accepting any more clients.");
 				}
